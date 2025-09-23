@@ -40,6 +40,9 @@ class DisplayMapActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.title = userMap.title
     }
 
     /**

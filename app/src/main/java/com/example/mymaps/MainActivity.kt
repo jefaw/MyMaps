@@ -1,11 +1,13 @@
 package com.example.mymaps
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var createMapLauncher: ActivityResultLauncher<Intent>
 
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -62,8 +65,9 @@ class MainActivity : AppCompatActivity() {
                     // Process the data from the result
                     if (data != null) {
                         // For example, if you expect a UserMap back:
-                        // val userMap = data.getParcelableExtra<UserMap>(EXTRA_USER_MAP)
+                         val userMap = data.getSerializableExtra("EXTRA_USER_MAP") as UserMap
                         // Or if you expect something else based on your CreateMapActivity result
+                        println("Received UserMap: ${userMap.title}")
                     }
                 }else {
                     // Handle cases where the activity finished with a different result code
@@ -75,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         fabCreateMap.setOnClickListener {
             println("tapped on FAB")
             val intent = Intent(this@MainActivity, CreateMapActivity::class.java)
-            intent.putExtra(EXTRA_MAP_TITLE, "new map name")
+            intent.putExtra(EXTRA_MAP_TITLE, "new map name (temp)")
             createMapLauncher.launch(intent)
         }
     }

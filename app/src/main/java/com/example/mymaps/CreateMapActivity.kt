@@ -1,13 +1,17 @@
 package com.example.mymaps
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.EditText
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import android.content.Intent
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -16,6 +20,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.example.mymaps.databinding.ActivityCreateMapBinding
+import com.example.mymaps.models.UserMap
+import com.example.mymaps.models.Place
 import com.google.android.gms.maps.model.Marker
 import com.google.android.material.snackbar.Snackbar
 
@@ -32,6 +38,8 @@ class CreateMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         binding = ActivityCreateMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.title = "New Map Collection"
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -40,6 +48,49 @@ class CreateMapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         Snackbar.make(mapFragment.requireView(), "Long press to add a marker!", Snackbar.LENGTH_INDEFINITE)
             .setAction("OK",{}).setActionTextColor(ContextCompat.getColor(this, android.R.color.white)).show()
+    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_create_map, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // check that 'item' is the save menu option
+        if (item.itemId == R.id.miSave) {
+            if (markers.isEmpty()) {
+                Toast.makeText(
+                    this,
+                    "There must be at least one marker on the map",
+                    Toast.LENGTH_LONG
+                ).show()
+                return true
+            }
+            val title = intent.getStringExtra(EXTRA_MAP_TITLE)
+            if (title == null) {
+                // Handle the case where the title is missing
+                // For example, show an error message and don't create the UserMap
+                Toast.makeText(this, "Map title is missing", Toast.LENGTH_LONG).show()
+                // Potentially return or finish the activity if the title is crucial
+                return true
+            }
+
+            val places = markers.map { marker ->
+                Place(
+                    marker.title ?: "Untitled Place",  // Or marker.title ?: ""
+                    marker.snippet ?: "No Description", // Or marker.snippet ?: ""
+                    marker.position.latitude,
+                    marker.position.longitude
+                )
+            }
+//            else create a user map
+            val userMap = UserMap(intent.getStringExtra(EXTRA_MAP_TITLE)!!,places)
+            val data = Intent()
+            data.putExtra(EXTRA_USER_MAP, userMap)
+            setResult(Activity.RESULT_OK, data)
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     /**
