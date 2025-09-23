@@ -39,7 +39,7 @@ class CreateMapActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityCreateMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
-        supportActionBar?.title = "New Map Collection"
+        supportActionBar?.title = intent.getStringExtra(EXTRA_MAP_TITLE)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -114,8 +114,10 @@ class CreateMapActivity : AppCompatActivity(), OnMapReadyCallback {
             markers.remove(markerToDelete)
             markerToDelete.remove() //delete from map
         }
-        // Add a marker in Sydney and move the camera
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+        // default camera
+        val london = LatLng(41.5, 0.12)
+//        mMap.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(london, 1.5f))
     }
     private fun showAlertDialog(latLng: LatLng) {
         val placeFormView = LayoutInflater.from(this).inflate(R.layout.dialog_create_place, null)
