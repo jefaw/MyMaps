@@ -3,6 +3,9 @@ package com.example.mymaps
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -10,10 +13,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mymaps.models.Place
 import com.example.mymaps.models.UserMap
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
+
+const val EXTRA_MAP_TITLE = "EXTRA_MAP_TITLE"
 const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
+//private const val REQUEST_CODE = 1234
 class MainActivity : AppCompatActivity() {
     private lateinit var rvMaps: RecyclerView
+    private lateinit var fabCreateMap: FloatingActionButton
+
+    private lateinit var createMapLauncher: ActivityResultLauncher<Intent>
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,8 +54,30 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+        createMapLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+                if (result.resultCode == RESULT_OK) {
+                    // Handle the Intent
+                    val data: Intent? = result.data
+                    // Process the data from the result
+                    if (data != null) {
+                        // For example, if you expect a UserMap back:
+                        // val userMap = data.getParcelableExtra<UserMap>(EXTRA_USER_MAP)
+                        // Or if you expect something else based on your CreateMapActivity result
+                    }
+                }else {
+                    // Handle cases where the activity finished with a different result code
+                    println("CreateMapActivity finished with result code: ${result.resultCode}")
+                }
+            }
 
-
+        fabCreateMap= findViewById(R.id.fabCreateMap)
+        fabCreateMap.setOnClickListener {
+            println("tapped on FAB")
+            val intent = Intent(this@MainActivity, CreateMapActivity::class.java)
+            intent.putExtra(EXTRA_MAP_TITLE, "new map name")
+            createMapLauncher.launch(intent)
+        }
     }
     private fun generateSampleData(): List<UserMap> {
         return listOf(
