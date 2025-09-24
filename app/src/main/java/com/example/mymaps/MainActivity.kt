@@ -1,6 +1,7 @@
 package com.example.mymaps
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
@@ -22,11 +23,17 @@ import com.example.mymaps.models.Place
 import com.example.mymaps.models.UserMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
 
 
 const val EXTRA_MAP_TITLE = "EXTRA_MAP_TITLE"
 const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 //private const val REQUEST_CODE = 1234
+private const val FILENAME = "UserMaps.data"
 class MainActivity : AppCompatActivity() {
     private lateinit var rvMaps: RecyclerView
     private lateinit var fabCreateMap: FloatingActionButton
@@ -47,8 +54,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        userMaps = deserializeUserMaps(this).toMutableList()
 
-        userMaps = generateSampleData().toMutableList()
         rvMaps = findViewById(R.id.rvMaps)
         // Set up the RecyclerView layout manager
         rvMaps.layoutManager = LinearLayoutManager(this)
@@ -74,14 +81,15 @@ class MainActivity : AppCompatActivity() {
                     val data: Intent? = result.data
                     // Process the data from the result
                     if (data != null) {
-                        // For example, if you expect a UserMap back:
-                         val userMap = data.getSerializableExtra("EXTRA_USER_MAP") as UserMap
-                        // Or if you expect something else based on your CreateMapActivity result
+                        val userMap = data.getSerializableExtra("EXTRA_USER_MAP") as UserMap
+
 //                        println("Received UserMap: ${userMap.title}")
                         this@MainActivity.userMaps.add(userMap)
-
                         //notify adapter
                         mapAdapter.notifyItemInserted(this@MainActivity.userMaps.size - 1)
+                        serializeUserMaps(this@MainActivity, this@MainActivity.userMaps)
+                    } else {
+                        println("Received data is null")
                     }
                 }else {
                     // Handle cases where the activity finished with a different result code
@@ -117,7 +125,22 @@ class MainActivity : AppCompatActivity() {
             createMapLauncher.launch(intent)
             dialog.dismiss()
         }
+    }
 
+    private fun serializeUserMaps(context: Context, userMaps: List<UserMap>) {
+        ObjectOutputStream(FileOutputStream(getDataFile(context))).use { it.writeObject(userMaps) }
+    }
+
+    private fun deserializeUserMaps(context: Context) : List<UserMap> {
+        val dataFile = getDataFile(context)
+        if (!dataFile.exists()) {
+            return emptyList()
+        }
+        ObjectInputStream(FileInputStream(dataFile)).use { return it.readObject() as List<UserMap> }
+    }
+
+    private fun getDataFile(context: Context): File {
+        return File(context.filesDir, FILENAME)
     }
 
 
