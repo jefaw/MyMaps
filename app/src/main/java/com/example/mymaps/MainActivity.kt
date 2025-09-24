@@ -1,5 +1,6 @@
 package com.example.mymaps
 
+import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
@@ -67,8 +68,11 @@ class MainActivity : AppCompatActivity() {
                 val intent = Intent(this@MainActivity, DisplayMapActivity::class.java)
 
                 intent.putExtra(EXTRA_USER_MAP, userMaps[position])
-                startActivity(intent)
-
+                val options = ActivityOptions.makeCustomAnimation(this@MainActivity,
+                    R.anim.slide_in_right,
+                    R.anim.slide_out_left
+                )
+                startActivity(intent, options.toBundle())
             }
 
         })
