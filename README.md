@@ -16,7 +16,7 @@ My Maps is an Android application that allows users to create, save, and view th
 
 ## Screenshots
 
-![My Maps App Screenshot](screenshots/mymaps.png)
+<img src="screenshots/mymaps.png" alt="My Maps App Screenshot" width="50%">
 
 ## Technologies Used
 
