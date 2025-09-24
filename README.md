@@ -1,10 +1,9 @@
 # My Maps - Android Application
+<img src="screenshots/mymaps.png" alt="My Maps App Screenshot" width="40%">
 
 ## Description
-
 My Maps is an Android application that allows users to create, save, and view their own custom maps with personalized markers. Users can define map titles and add multiple places (markers) with titles and descriptions to each map. This app provides a simple way to keep track of interesting locations or plan itineraries.
 
-<img src="screenshots/mymaps.png" alt="My Maps App Screenshot" width="50%">
 
 ## Features
 
